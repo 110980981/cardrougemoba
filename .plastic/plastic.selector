@@ -1,0 +1,4 @@
+repository "肉鸽moba@tj_4d8c2908_bc03_43a4_bbc1_f44f53cd0a61@cloud.cn"
+  path "/"
+    br "/main"
+    co "/main"
