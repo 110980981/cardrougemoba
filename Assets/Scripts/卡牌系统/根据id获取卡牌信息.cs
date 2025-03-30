@@ -45,4 +45,17 @@ public class 根据id获取卡牌信息 : MonoBehaviour
     {
         return 卡牌信息[id];
     }
+    public Sprite 获取卡牌图片(int id)
+    {
+        string 图片路径 = "卡面/" + 卡牌信息[id][0];
+        try
+        {
+            Sprite 图片 = Resources.Load<Sprite>(图片路径);
+            return 图片;
+        }
+        catch (System.Exception)
+        {
+            return null;
+        }
+    }
 }

@@ -8,6 +8,7 @@ using DG.Tweening;
 public class 人物技能 : MonoBehaviour
 {
     public 人物属性 人物属性;
+    public 人物控制器 人物控制器;
     public void 释放技能(string 技能名)
     {
         Type t = this.GetType();
@@ -54,12 +55,18 @@ public class 人物技能 : MonoBehaviour
     public void 翻滚()
     {
         float 翻滚距离=4f;
-        transform.DOMove(transform.position + (Vector3)transform.GetComponent<Rigidbody2D>().velocity.normalized*翻滚距离,0.2f);
+        if(GetComponent<翻滚>()==null)gameObject.AddComponent<翻滚>();
+        if(GetComponent<Rigidbody2D>().velocity.normalized.magnitude == 0)GetComponent<翻滚>()._翻滚(transform.right*翻滚距离*(transform.Find("贴图").GetComponent<SpriteRenderer>().flipX?1:-1));
+        else GetComponent<翻滚>()._翻滚(翻滚距离*GetComponent<Rigidbody2D>().velocity.normalized);
     }
     public void 冲撞()
     {
-        float 冲撞距离=6f;
-        transform.DOMove(transform.position + (Vector3)transform.GetComponent<Rigidbody2D>().velocity.normalized*冲撞距离,0.2f);
+        float 冲撞距离=6f;int 冲撞伤害=3;
+        人物属性.冲撞伤害 = 冲撞伤害;
+        人物控制器.人物当前状态 = 游戏所有类型的管理器.人物状态.冲撞;
+        if(GetComponent<冲撞>()==null)gameObject.AddComponent<冲撞>();
+        if(GetComponent<Rigidbody2D>().velocity.normalized.magnitude == 0) GetComponent<冲撞>()._冲撞(transform.right*冲撞距离*(transform.Find("贴图").GetComponent<SpriteRenderer>().flipX?1:-1),冲撞伤害);
+        else GetComponent<冲撞>()._冲撞(冲撞距离*GetComponent<Rigidbody2D>().velocity.normalized,冲撞伤害);
     }
     public void 防守()
     {

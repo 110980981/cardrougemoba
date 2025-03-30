@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using GifImporter;
 
 public class 人物移动 : MonoBehaviour
 {
