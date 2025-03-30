@@ -31,7 +31,7 @@ public class 冲撞 : MonoBehaviour
     {
         transform.Find("贴图").GetComponent<播放序列帧_图集版本>().播放序列帧(冲撞动画,12,15,"猎人冲撞_",()=>{
             transform.Find("贴图").GetComponent<Animator>().enabled = true;
-            GetComponent<人物控制器>().人物当前状态 = 游戏所有类型的管理器.人物状态.待机;
+            GetComponent<人物控制器>().人物当前状态 = 游戏所有类型的管理器.人物状态过度判断(游戏所有类型的管理器.人物状态.待机,GetComponent<人物控制器>().人物当前状态);
         });
     }
     bool 只能冲撞一次 = false;

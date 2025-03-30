@@ -7,6 +7,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine.UI;
 using System.Data;
+using Unity.VisualScripting;
 
 public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPointerDownHandler,IPointerUpHandler
 {
@@ -55,7 +56,6 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
         卡牌文本框.Instance.显示文本(文本描述);
         卡面.transform.DOScale(1.5f*初始大小, 0.2f);
         卡面.transform.DOMove(初始位置 + new Vector3(0, 1f, 0), 0.2f);
-        Debug.Log("鼠标进入");
         卡面.GetComponent<SpriteRenderer>().sortingOrder = 10; // 设置为较高的值
     }
     public void OnPointerExit(PointerEventData eventData)
@@ -82,6 +82,7 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
     public void OnPointerUp(PointerEventData eventData)
     {
         卡面.transform.DOScale(初始大小, 0.2f);
+        GameObject 距离最近的牌 = 寻找距离最近的牌();
         if(卡面.transform.position.y-初始位置.y>3f)
         {
             正在弃牌 = true;
@@ -97,6 +98,36 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
                 });
             });
         }
+        else if(距离最近的牌!=this.gameObject)
+        {
+            string 组合技 = 玩家.GetComponent<人物技能>().获取组合技(距离最近的牌.GetComponent<卡牌>().卡牌名,卡牌名);
+            if(组合技!="没有这个组合技")
+            {
+                正在弃牌 = true;
+                距离最近的牌.GetComponent<卡牌>().正在弃牌 = true;
+                玩家.GetComponent<人物技能>().释放技能(组合技);
+                卡面.transform.GetComponent<SpriteRenderer>().DOFade(0, 0.2f).OnComplete(() => {
+                    卡面.transform.localScale = 初始大小;
+                    卡面.transform.localPosition = Vector3.zero;
+                    距离最近的牌.transform.GetComponent<卡牌>().卡面.transform.localScale = 距离最近的牌.GetComponent<卡牌>().初始大小;
+                    距离最近的牌.transform.GetComponent<卡牌>().卡面.transform.localPosition = Vector3.zero;
+                    transform.position = Vector2.one * 3000;
+                    距离最近的牌.transform.position = Vector2.one * 3000;
+                    卡面.GetComponent<SpriteRenderer>().sortingOrder = 0; // 恢复默认值
+                    卡面.transform.GetComponent<SpriteRenderer>().DOFade(1, 0.05f).OnComplete(() => {
+                        牌库手牌墓地管理.实例.连续弃牌(new List<GameObject>{this.gameObject,距离最近的牌});
+                        卡牌文本框.Instance.隐藏文本();
+                        正在弃牌 = false;
+                        距离最近的牌.GetComponent<卡牌>().正在弃牌 = false;
+                    });
+                });
+            }
+            else
+            {
+                卡面.transform.DOMove(初始位置, 0.2f);
+                牌库手牌墓地管理.实例.展示手牌();
+            }
+        }
         else
         {
             卡面.transform.DOMove(初始位置, 0.2f);
@@ -107,5 +138,21 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
             是否跟随鼠标 = false;
             MonoMgr.GetInstance().RemoveUpdateListener(跟随鼠标);
         }
+    }
+    public GameObject 寻找距离最近的牌()
+    {
+        GameObject 距离最近的牌 = transform.gameObject;
+        float 最近距离 = Vector3.Distance(transform.position, 初始位置);
+        for(int i = 0; i < 牌库手牌墓地管理.实例.手牌.Count; i++)
+        {
+            if(牌库手牌墓地管理.实例.手牌[i]==this.gameObject)continue;
+            float 距离 = Vector3.Distance(牌库手牌墓地管理.实例.手牌[i].transform.GetComponent<卡牌>().初始位置,transform.position);
+            if(距离 < 最近距离)
+            {
+                距离最近的牌 = 牌库手牌墓地管理.实例.手牌[i];
+                最近距离 = 距离;
+            }
+        }
+        return 距离最近的牌;
     }
 }

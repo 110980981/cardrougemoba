@@ -37,6 +37,16 @@ public class 牌库手牌墓地管理 : MonoBehaviour
         墓地.Add(牌);
         展示手牌();
     }
+    public void 连续弃牌(List<GameObject> 牌)
+    {
+        for (int i = 0; i < 牌.Count; i++)
+        {
+            牌[i].transform.position = Vector2.one * 3000;
+            手牌.Remove(牌[i]);
+            墓地.Add(牌[i]);
+        }
+        展示手牌();
+    }
     public void 加入手牌(GameObject 牌)
     {
         手牌.Add(牌);
