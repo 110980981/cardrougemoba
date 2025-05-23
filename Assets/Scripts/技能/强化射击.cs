@@ -6,9 +6,9 @@ using DG.Tweening;
 public class 强化射击 : MonoBehaviour
 {
     public string 技能类型;
-    public int 攻击力;
+    public float 攻击力;
     public float 飞行时间;
-    public void Init(int 攻击力,float 飞行时间,Vector3 方向,float 速度,Vector3 初始位置)
+    public void Init(float 攻击力,float 飞行时间,Vector3 方向,float 速度,Vector3 初始位置)
     {
         this.攻击力 = 攻击力;
         this.飞行时间 = 飞行时间;
@@ -25,7 +25,7 @@ public class 强化射击 : MonoBehaviour
     {
         if (other.tag == "敌人")
         {
-            other.GetComponent<敌人受击>().受击(攻击力,GetComponent<Rigidbody2D>().velocity);
+            other.GetComponent<受击接口>().受击(GetComponent<Rigidbody2D>().velocity,攻击力);
             GetComponent<Rigidbody2D>().velocity = Vector3.zero;
             对象池.实例.回收(gameObject,技能类型);
         }

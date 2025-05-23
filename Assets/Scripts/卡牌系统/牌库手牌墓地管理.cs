@@ -32,10 +32,10 @@ public class 牌库手牌墓地管理 : MonoBehaviour
     float 抽卡计时器;
     public void 弃牌(GameObject 牌)
     {
-        牌.transform.position = Vector2.one * 3000;
         手牌.Remove(牌);
         墓地.Add(牌);
         展示手牌();
+        牌.transform.position = Vector2.one * 3000;
     }
     public void 连续弃牌(List<GameObject> 牌)
     {
@@ -81,19 +81,19 @@ public class 牌库手牌墓地管理 : MonoBehaviour
             牌库[随机数] = 牌;
         } 
     }
-    public void 展示手牌(bool 是否有新牌加入手牌=false)
+    public void 展示手牌(bool 是否有新牌加入手牌 = false)
     {
         for (int i = 0; i < 手牌.Count; i++)
         {
             Vector3 位置 = 卡牌位置.position;
-            位置.x += (卡牌间距.position.x-卡牌位置.position.x) * (i - 手牌.Count / 2);
-            位置.y += (卡牌间距.position.y-卡牌位置.position.y) * Mathf.Abs(i - 手牌.Count / 2);
+            位置.x += (卡牌间距.position.x - 卡牌位置.position.x) * (i - 手牌.Count / 2);
+            位置.y += (卡牌间距.position.y - 卡牌位置.position.y) * Mathf.Abs(i - 手牌.Count / 2);
             Vector3 旋转 = 卡牌位置.eulerAngles;
-            旋转+=new Vector3(0,0,-10)*(i-手牌.Count/2);
-            if(是否有新牌加入手牌&&i+1==手牌.Count)
+            旋转 += new Vector3(0, 0, -10) * (i - 手牌.Count / 2);
+            if (是否有新牌加入手牌 && i + 1 == 手牌.Count)
             {
                 手牌[i].transform.position = 卡牌飞入的位置.position;
-                手牌[i].transform.DOJump(位置,0.5f,1, 0.5f);
+                手牌[i].transform.DOJump(位置, 0.5f, 1, 0.5f);
                 手牌[i].transform.DORotate(旋转, 0.5f);
             }
             else
@@ -106,6 +106,7 @@ public class 牌库手牌墓地管理 : MonoBehaviour
     }
     void Update()
     {
+        // 展示手牌();
         每隔一段时间自动抽卡();
     }
     void 每隔一段时间自动抽卡()

@@ -8,6 +8,7 @@ using TMPro;
 using UnityEngine.UI;
 using System.Data;
 using Unity.VisualScripting;
+using System;
 
 public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPointerDownHandler,IPointerUpHandler
 {
@@ -15,10 +16,12 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
     public Vector3 初始大小,初始位置;
     public GameObject 卡面;
     GameObject 玩家;
+    public List<GameObject> 该卡牌关联的游戏物体 = new List<GameObject>();
+    public event EventHandler 这张牌使用事件;
     bool 是否跟随鼠标,正在弃牌;
     public void Init(int id)
     {
-        玩家 = GameObject.FindWithTag("Player");
+        玩家 = 用于找全局变量的脚本.实例.玩家;
         初始大小 = 卡面.transform.localScale;
         transform.position = Vector2.one * 3000;
         初始位置 = 卡面.transform.position;
@@ -42,6 +45,13 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
         正在弃牌 = false;
         卡面.transform.localScale = 初始大小;
         卡面.transform.position = 初始位置;
+        玩家.GetComponent<人物技能>().释放技能(卡牌名 + "_加入手牌",gameObject);
+    }
+    public void 供外部调用的使用这张牌接口(params object[] 参数)
+    {
+        玩家.GetComponent<人物技能>().释放技能(卡牌名,参数);
+        if (这张牌使用事件 != null) 这张牌使用事件(this, EventArgs.Empty);
+        牌库手牌墓地管理.实例.弃牌(this.gameObject);
     }
     void 跟随鼠标()
     {
@@ -52,7 +62,8 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if(正在弃牌)return;
+        牌库手牌墓地管理.实例.展示手牌();
+        if (正在弃牌) return;
         卡牌文本框.Instance.显示文本(文本描述);
         卡面.transform.DOScale(1.5f*初始大小, 0.2f);
         卡面.transform.DOMove(初始位置 + new Vector3(0, 1f, 0), 0.2f);
@@ -60,8 +71,9 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        if(正在弃牌)return;
-        if(!是否跟随鼠标)
+        牌库手牌墓地管理.实例.展示手牌();
+        if (正在弃牌) return;
+        if (!是否跟随鼠标)
         {
             卡面.transform.DOScale(初始大小, 0.2f);
             卡面.transform.DOMove(初始位置, 0.2f);
@@ -87,13 +99,14 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
         {
             正在弃牌 = true;
             玩家.GetComponent<人物技能>().释放技能(卡牌名);
+            if (这张牌使用事件 != null) 这张牌使用事件(this, EventArgs.Empty);
+            牌库手牌墓地管理.实例.弃牌(this.gameObject);
             卡面.transform.GetComponent<SpriteRenderer>().DOFade(0, 0.2f).OnComplete(() => {
                 卡面.transform.localScale = 初始大小;
                 卡面.transform.localPosition = Vector3.zero;
                 transform.position = Vector2.one * 3000;
                 卡面.GetComponent<SpriteRenderer>().sortingOrder = 0; // 恢复默认值
                 卡面.transform.GetComponent<SpriteRenderer>().DOFade(1, 0.05f).OnComplete(() => {
-                    牌库手牌墓地管理.实例.弃牌(this.gameObject);
                     正在弃牌 = false;
                 });
             });
@@ -133,6 +146,7 @@ public class 卡牌 : MonoBehaviour,IPointerEnterHandler,IPointerExitHandler,IPo
             卡面.transform.DOMove(初始位置, 0.2f);
             牌库手牌墓地管理.实例.展示手牌();
         }
+        牌库手牌墓地管理.实例.展示手牌();
         if(是否跟随鼠标)
         {
             是否跟随鼠标 = false;

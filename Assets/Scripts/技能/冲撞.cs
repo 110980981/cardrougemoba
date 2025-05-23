@@ -8,9 +8,9 @@ using UnityEngine.U2D;
 public class 冲撞 : MonoBehaviour
 {
     SpriteAtlas 冲撞动画;
-    int 冲撞伤害;
+    float 冲撞伤害;
     Vector3 冲撞距离;
-    public void _冲撞(Vector3 距离,int 伤害)
+    public void _冲撞(Vector3 距离,float 伤害)
     {
         transform.Find("贴图").GetComponent<Animator>().enabled = false;
         冲撞伤害 = 伤害;
@@ -41,7 +41,7 @@ public class 冲撞 : MonoBehaviour
         if(collision.gameObject.tag == "敌人")
         {
             只能冲撞一次 = true;
-            collision.gameObject.GetComponent<敌人受击>().受击(冲撞伤害,冲撞距离);
+            collision.gameObject.GetComponent<受击接口>().受击(冲撞距离,冲撞伤害);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -7,11 +8,16 @@ using UnityEngine;
 public class 人物控制器 : MonoBehaviour
 {
     private 游戏所有类型的管理器.人物状态 _人物当前状态=游戏所有类型的管理器.人物状态.待机;
+    public event EventHandler 人物状态改变事件;
     public 游戏所有类型的管理器.人物状态 人物当前状态
     {
         get { return _人物当前状态; }
         set
         {
+            if (人物当前状态 != value)
+            {
+                if (人物状态改变事件 != null) 人物状态改变事件(this, EventArgs.Empty);
+            }
             _人物当前状态 = value;
             switch (value)
             {
@@ -27,7 +33,7 @@ public class 人物控制器 : MonoBehaviour
                     break;
                 default:
                     break;
-            } 
+            }
         }
     }
     private Vector3 位移向量;
@@ -35,6 +41,14 @@ public class 人物控制器 : MonoBehaviour
     public 人物键位 人物键位;
     public 人物属性 人物属性;
     public 人物技能 人物技能;
+    public GameObject 人物贴图;
+    public GameObject A星寻路点;
+    public GameObject 跟随主角摄像机;
+    public bool 是否为该客户端操作的角色=true;
+    void Start()
+    {
+        血条管理.实例.初始化血量(人物属性.血量);
+    }
     void Update()
     {
         移动();
